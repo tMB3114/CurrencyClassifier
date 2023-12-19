@@ -54,21 +54,15 @@ def main():
         play_audio(filename)
         st.write(prediction_label)
 
-def preprocess_frame(frame):
-    
-    target_size = (224,224)  
-    
-    frame = cv2.resize(frame, target_size)
-  
-    frame = np.array(frame)
-    
-    frames = np.expand_dims(frame,0)
-    
-
+def preprocess_frame(frame):    
+    target_size = (224,224)      
+    frame = cv2.resize(frame, target_size)  
+    frame = np.array(frame)    
+    frames = np.expand_dims(frame,0)  
     return test_datagen.flow(frames,batch_size = 2)
 
 def get_label(class_index):
-    labels = ['fifty','five','five hundred','hundred','ten','thousand','twenty']  # Replace with your class labels
+    labels = ['fifty','five','five hundred','hundred','ten','thousand','twenty']  #  class labels
     return labels[class_index]
 
 def text_to_speech(text,filename, language='en'):
