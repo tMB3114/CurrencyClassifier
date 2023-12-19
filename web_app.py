@@ -1,13 +1,15 @@
-
-
 from gtts import gTTS
 import pygame
 import time
 import streamlit as st
+import scipy
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from datetime import datetime
+
+
 
 #for test time augmentation
 test_datagen = ImageDataGenerator(  rescale = 1./255,
@@ -37,16 +39,19 @@ def main():
         input_array = preprocess_frame(image)
         
         # Load the model
-        model = load_model('c:/Users/Bhabuk/Desktop/currency mine one/final_model.h5')  # Replace with your model path
+        model = load_model('C:/Users/koho/Desktop/fuseProject/CurrencyClassifier/final_model.h5')  # Replace with your model path
 
         # Make predictions
         predictions = model.predict_generator(input_array)
         summed = np.sum(predictions,axis =0)
         predicted_class = np.argmax(summed)
         label = get_label(predicted_class)
-        text_to_speech(label)
-        prediction_label = f'Prediction: {label}'
-        play_audio()
+        c = datetime.now()
+        current_Minute = c.strftime('%M%S')
+        filename = f'{label}{current_Minute}.mp3'
+        text_to_speech(label,filename)
+        prediction_label = f'Prediction: {label}      Accuracy :{np.round(np.max(summed),2)* 100}%'
+        play_audio(filename)
         st.write(prediction_label)
 
 def preprocess_frame(frame):
@@ -66,15 +71,19 @@ def get_label(class_index):
     labels = ['fifty','five','five hundred','hundred','ten','thousand','twenty']  # Replace with your class labels
     return labels[class_index]
 
-def text_to_speech(text, language='en', filename='output.mp3'):
+def text_to_speech(text,filename, language='en'):
     tts = gTTS(text=text, lang=language, slow=False)
     tts.save(filename)
 
-def play_audio(filename='output.mp3'):
+def play_audio(filename):
     pygame.mixer.init()
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play()
     time.sleep(5)
 
+   
+
 if __name__ == "__main__":
     main()
+    
+   
